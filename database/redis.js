@@ -1,7 +1,7 @@
 require('dotenv').config()
-import { createClient } from 'redis';
+const redis = require('redis');
 
-const client = createClient({
+const client = redis.createClient({
     url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`
 });
 

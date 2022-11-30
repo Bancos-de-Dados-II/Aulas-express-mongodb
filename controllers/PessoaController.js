@@ -1,4 +1,5 @@
 const Pessoa = require('../models/Pessoa');
+const redis = require('../database/redis');
 
 const salvarPessoa = async (req,res) =>{
     try{
@@ -16,6 +17,12 @@ const listarPessoas = async (req, res) =>{
 }
 
 const buscarPessoa = async (req, res)=>{
+    
+    await redis.connect();
+    
+    const resultRedis = await redis.get(''+req.params.id);
+    console.log(resultRedis);
+
     const pessoa = await Pessoa.findByPk(req.params.id);
     if(pessoa === null){
         res.status(404).send('Usuário não encontrado');
