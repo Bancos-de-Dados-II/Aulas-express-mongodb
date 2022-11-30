@@ -16,19 +16,25 @@ const listarPessoas = async (req, res) =>{
     res.status(200).send(pessoas);
 }
 
-const buscarPessoa = async (req, res)=>{
-    
-    await redis.connect();
+const buscarPessoa = async (req, res)=>{    
     
     const resultRedis = await redis.get(''+req.params.id);
-    console.log(resultRedis);
 
-    const pessoa = await Pessoa.findByPk(req.params.id);
-    if(pessoa === null){
-        res.status(404).send('Usuário não encontrado');
+    if(resultRedis == null){
+        //Objeto não está no Redis
+        const pessoa = await Pessoa.findByPk(req.params.id);
+        if(pessoa === null){
+            res.status(404).send('Usuário não encontrado');
+        }else{
+            await redis.set(''+req.params.id, JSON.stringify(pessoa));
+            res.status(200).send(pessoa);
+        }
     }else{
-        res.status(200).send(pessoa);
+        //Objeto está no Redis
+        res.status(200).send(JSON.parse(resultRedis));
     }
+
+    
 }
 
 const deletarPessoa = async (req,res)=>{
