@@ -26,7 +26,7 @@ const buscarPessoa = async (req, res)=>{
         if(pessoa === null){
             res.status(404).send('Usuário não encontrado');
         }else{
-            await redis.set(''+req.params.id, JSON.stringify(pessoa));
+            await redis.set(''+req.params.id, JSON.stringify(pessoa),{EX: 3600});
             res.status(200).send(pessoa);
         }
     }else{
