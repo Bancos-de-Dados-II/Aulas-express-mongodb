@@ -1,61 +1,37 @@
-const Pessoa = require('../models/Pessoa');
-const redis = require('../database/redis');
+const client = require('../database/mongo');
 
 const salvarPessoa = async (req,res) =>{
+    const pessoa = req.body;
+
     try{
-        const pessoa = Pessoa.build(req.body);
-        await pessoa.save();
+        await client.connect();
+        const pessoas = client.db('aula').collection('pessoas');
+    
+        await pessoas.insertOne(pessoa);
+    
         res.status(201).send('Usuário criado');
     }catch{
         res.status(400).send('Falha ao salvar');
+    }finally{
+        client.close();
     }
+    
 }
 
 const listarPessoas = async (req, res) =>{
-    const pessoas = await Pessoa.findAll();
-    res.status(200).send(pessoas);
+    res.status(200).send('ok');
 }
 
 const buscarPessoa = async (req, res)=>{    
-    
-    const resultRedis = await redis.get(''+req.params.id);
-
-    if(resultRedis == null){
-        //Objeto não está no Redis
-        const pessoa = await Pessoa.findByPk(req.params.id);
-        if(pessoa === null){
-            res.status(404).send('Usuário não encontrado');
-        }else{
-            await redis.set(''+req.params.id, JSON.stringify(pessoa),{EX: 3600});
-            res.status(200).send(pessoa);
-        }
-    }else{
-        //Objeto está no Redis
-        res.status(200).send(JSON.parse(resultRedis));
-    }
-
-    
+    res.status(200).send('ok');
 }
 
 const deletarPessoa = async (req,res)=>{
-    const pessoa = await Pessoa.findByPk(req.params.id);
-    if(pessoa === null){
-        res.status(404).send('Usuário não encontrado');
-    }else{
-        await pessoa.destroy();
-        res.status(200).send('Removido com sucesso');
-    }
+    res.status(200).send('ok');
 }
 
 const atualizarPessoa = async (req,res)=>{
-    const pessoa = await Pessoa.findByPk(req.params.id);
-    if(pessoa === null){
-        res.status(404).send('Usuário não encontrado');
-    }else{
-        pessoa.set(req.body);
-        await pessoa.save();
-        res.status(200).send('Atualizado com sucesso');
-    }
+    res.status(200).send('ok');
 }
 
 module.exports = {salvarPessoa, listarPessoas, buscarPessoa, deletarPessoa, atualizarPessoa};
