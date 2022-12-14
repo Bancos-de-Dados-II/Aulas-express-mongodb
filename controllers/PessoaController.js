@@ -11,6 +11,7 @@ const salvarPessoa = async (req,res) =>{
     
         res.status(201).send('Usuário criado');
     }catch{
+        //TODO: Tratar e-mail duplicado.
         res.status(400).send('Falha ao salvar');
     }finally{
         client.close();
@@ -19,7 +20,16 @@ const salvarPessoa = async (req,res) =>{
 }
 
 const listarPessoas = async (req, res) =>{
-    res.status(200).send('ok');
+    try{
+        await client.connect();
+        const pessoas = client.db('aula').collection('pessoas');
+        const retorno = await pessoas.find().toArray();
+        res.status(200).send(retorno);
+    }catch{
+        res.status(400).send('Falha ao listar');
+    }finally{
+        client.close();
+    }
 }
 
 const buscarPessoa = async (req, res)=>{    
