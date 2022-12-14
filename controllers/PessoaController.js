@@ -33,7 +33,16 @@ const listarPessoas = async (req, res) =>{
 }
 
 const buscarPessoa = async (req, res)=>{    
-    res.status(200).send('ok');
+    try{
+        await client.connect();
+        const pessoas = client.db('aula').collection('pessoas');
+        const retorno = await pessoas.find({email:req.params.email}).toArray();
+        res.status(200).send(retorno);
+    }catch{
+        res.status(400).send('Falha ao listar');
+    }finally{
+        client.close();
+    }
 }
 
 const deletarPessoa = async (req,res)=>{

@@ -38,7 +38,7 @@ const pessoaController = require('./controllers/PessoaController');
 
 //Rotas para a entidade pessoa
 app.get('/pessoas', pessoaController.listarPessoas);
-app.get('/pessoas/:id', pessoaController.buscarPessoa);
+app.get('/pessoas/:email', pessoaController.buscarPessoa);
 app.post('/pessoas', pessoaController.salvarPessoa);
 app.delete('/pessoas/:id', pessoaController.deletarPessoa);
 app.put('/pessoas/:id', pessoaController.atualizarPessoa);
