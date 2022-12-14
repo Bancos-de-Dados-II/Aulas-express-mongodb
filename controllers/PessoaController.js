@@ -46,7 +46,23 @@ const buscarPessoa = async (req, res)=>{
 }
 
 const deletarPessoa = async (req,res)=>{
-    res.status(200).send('ok');
+    try{
+        await client.connect();
+        const pessoas = client.db('aula').collection('pessoas');
+        const retorno = await pessoas.deleteOne({email:req.params.email});
+        
+        //Verificar se algum usuário foi removido
+        if(retorno.deletedCount > 0){
+            res.status(200).send("Usuário removido");
+        }else{
+            res.status(400).send("Usuário não encontrado");
+        }
+
+    }catch{
+        res.status(400).send('Falha ao listar');
+    }finally{
+        client.close();
+    }
 }
 
 const atualizarPessoa = async (req,res)=>{
