@@ -41,7 +41,7 @@ app.get('/pessoas', pessoaController.listarPessoas);
 app.get('/pessoas/:email', pessoaController.buscarPessoa);
 app.post('/pessoas', pessoaController.salvarPessoa);
 app.delete('/pessoas/:email', pessoaController.deletarPessoa);
-app.put('/pessoas/:id', pessoaController.atualizarPessoa);
+app.put('/pessoas/:email', pessoaController.atualizarPessoa);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)

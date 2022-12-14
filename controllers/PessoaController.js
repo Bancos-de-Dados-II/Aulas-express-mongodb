@@ -66,7 +66,23 @@ const deletarPessoa = async (req,res)=>{
 }
 
 const atualizarPessoa = async (req,res)=>{
-    res.status(200).send('ok');
+    try{
+        await client.connect();
+        const pessoas = client.db('aula').collection('pessoas');
+        const retorno = await pessoas.replaceOne({email:req.params.email}, req.body);
+        
+        //Verificar se algum usuário foi removido
+        if(retorno.modifiedCount > 0){
+            res.status(200).send("Usuário Atualizado");
+        }else{
+            res.status(400).send("Usuário não encontrado");
+        }
+
+    }catch{
+        res.status(400).send('Falha ao listar');
+    }finally{
+        client.close();
+    }
 }
 
 module.exports = {salvarPessoa, listarPessoas, buscarPessoa, deletarPessoa, atualizarPessoa};
